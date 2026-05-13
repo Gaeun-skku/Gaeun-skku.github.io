@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaeun Choe — Dance & Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080a0f;
+    --surface: #0e1118;
+    --surface2: #141720;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e4dc;
+    --muted: #7a7a8a;
+    --accent1: #ff4d6d;
+    --accent2: #c77dff;
+    --accent3: #48cae4;
+    --gold: #f0c060;
+    --glow1: rgba(255,77,109,0.15);
+    --glow2: rgba(199,125,255,0.12);
+    --glow3: rgba(72,202,228,0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent1);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.3s, width 0.3s, height 0.3s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,77,109,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease, width 0.3s, height 0.3s, opacity 0.3s;
+  }
+  a:hover ~ .cursor, button:hover ~ .cursor { transform: translate(-50%, -50%) scale(2); }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Navigation */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    padding: 1.4rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(8,10,15,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .nav-logo span {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--accent1);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 var(--glow1); }
+    50% { box-shadow: 0 0 0 6px transparent; }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0; right: 100%;
+    height: 1px;
+    background: var(--accent1);
+    transition: right 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { right: 0; }
+
+  /* Hero */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 8rem 3rem 4rem;
+  }
+
+  /* Animated gradient background */
+  #hero::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 30%, rgba(255,77,109,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 70%, rgba(199,125,255,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 60% 20%, rgba(72,202,228,0.07) 0%, transparent 50%);
+    animation: bgDrift 12s ease-in-out infinite alternate;
+  }
+  @keyframes bgDrift {
+    0% { transform: translate(0,0) rotate(0deg); }
+    100% { transform: translate(2%, 2%) rotate(3deg); }
+  }
+
+  /* Decorative grid lines */
+  #hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 40px; height: 1px;
+    background: var(--accent1);
+  }
+
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 9vw, 7.5rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2rem;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.4s forwards;
+  }
+  .hero-name em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.6s forwards;
+  }
+
+  .hero-desc {
+    font-size: 1.15rem;
+    color: rgba(232,228,220,0.65);
+    max-width: 540px;
+    margin-bottom: 3rem;
+    line-height: 1.9;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.8s forwards;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 2rem;
+    border: 1px solid rgba(255,77,109,0.4);
+    color: var(--accent1);
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 1s forwards;
+  }
+  .hero-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent1);
+    transform: translateX(-101%);
+    transition: transform 0.3s ease;
+    z-index: -1;
+  }
+  .hero-cta:hover { color: var(--bg); }
+  .hero-cta:hover::before { transform: translateX(0); }
+
+  /* Floating badge */
+  .hero-badge {
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 200px; height: 200px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.2s forwards;
+  }
+  .badge-ring {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(199,125,255,0.2);
+    border-radius: 50%;
+    animation: spin 20s linear infinite;
+  }
+  .badge-ring::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: 50%;
+    width: 6px; height: 6px;
+    background: var(--accent2);
+    border-radius: 50%;
+    transform: translateX(-50%);
+  }
+  .badge-inner {
+    position: absolute;
+    inset: 20px;
+    border: 1px solid rgba(255,77,109,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    background: rgba(14,17,24,0.8);
+    backdrop-filter: blur(10px);
+  }
+  .badge-inner strong {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    display: block;
+  }
+  .badge-inner span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--text);
+    display: block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 1s ease 1.5s forwards;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--accent1), transparent);
+    animation: scrollLine 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollLine {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* Section base */
+  section { position: relative; }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 7rem 3rem;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 30px; height: 1px;
+    background: var(--accent1);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 3rem;
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 0 3rem;
+  }
+
+  /* About */
+  #about { background: var(--surface); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: rgba(232,228,220,0.75);
+    font-size: 1.1rem;
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .stat-card {
+    padding: 1.8rem 2rem;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .stat-card:hover { border-color: rgba(255,77,109,0.2); transform: translateY(-2px); }
+  .stat-card:hover::before { transform: scaleX(1); }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Projects */
+  #projects { background: var(--bg); }
+
+  .project-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: border-color 0.4s, transform 0.4s;
+    margin-bottom: 2rem;
+    background: var(--surface);
+  }
+  .project-card:hover {
+    border-color: rgba(199,125,255,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(199,125,255,0.1);
+  }
+
+  .project-visual {
+    background: linear-gradient(135deg, rgba(255,77,109,0.08), rgba(199,125,255,0.12), rgba(72,202,228,0.08));
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* K-pop chart viz */
+  .chart-viz {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.6rem;
+  }
+  .chart-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    width: 50px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    animation: barGrow 1.5s ease forwards;
+    animation-delay: var(--d, 0s);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  @keyframes barGrow { to { transform: scaleX(1); } }
+  .bar-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    width: 36px;
+    flex-shrink: 0;
+  }
+
+  .chart-title-overlay {
+    position: absolute;
+    top: 1.5rem; left: 1.5rem;
+    right: 1.5rem;
+  }
+  .chart-title-overlay strong {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .chart-title-overlay span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--text);
+    display: block;
+  }
+
+  /* Pulse dots */
+  .pulse-dots {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    display: flex;
+    gap: 0.4rem;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  .pulse-dot:nth-child(1) { background: var(--accent1); animation-delay: 0s; }
+  .pulse-dot:nth-child(2) { background: var(--accent2); animation-delay: 0.3s; }
+  .pulse-dot:nth-child(3) { background: var(--accent3); animation-delay: 0.6s; }
+  @keyframes pulseDot {
+    0%,100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .project-info {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .project-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent2);
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .project-num::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .project-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .project-desc {
+    color: rgba(232,228,220,0.65);
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .tag {
+    padding: 0.3rem 0.9rem;
+    background: rgba(199,125,255,0.08);
+    border: 1px solid rgba(199,125,255,0.2);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+  .tag:hover { background: rgba(199,125,255,0.15); }
+
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent1);
+    text-decoration: none;
+    transition: gap 0.3s;
+  }
+  .project-link:hover { gap: 1rem; }
+  .project-link::after { content: '→'; }
+
+  /* Skills */
+  #skills { background: var(--surface); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .skill-group {
+    padding: 2rem;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .skill-group:hover { transform: translateY(-3px); border-color: rgba(72,202,228,0.25); }
+
+  .skill-group::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .skill-group:hover::after { transform: scaleX(1); }
+
+  .skill-group-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .skill-group-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 1.2rem;
+  }
+
+  .skill-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .skill-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .skill-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .skill-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .skill-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+
+  .skill-bar {
+    height: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .skill-fill {
+    height: 100%;
+    border-radius: 1px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent2));
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.2s ease;
+  }
+  .skill-fill.animate { transform: scaleX(1); }
+
+  /* Contact */
+  #contact { background: var(--bg); }
+
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .contact-intro {
+    font-size: 1.1rem;
+    color: rgba(232,228,220,0.7);
+    line-height: 1.9;
+    margin-bottom: 2.5rem;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.3s, background 0.3s, transform 0.3s;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-link::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--accent1), var(--accent2));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.3s ease;
+  }
+  .contact-link:hover { border-color: rgba(255,77,109,0.2); background: var(--surface2); transform: translateX(4px); }
+  .contact-link:hover::before { transform: scaleY(1); }
+
+  .contact-link-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,77,109,0.1);
+    border: 1px solid rgba(255,77,109,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .contact-link-info strong {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .contact-link-info span {
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  /* Contact form side */
+  .contact-form-area {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-field label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-field input,
+  .form-field textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.9rem 1.2rem;
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+    resize: none;
+  }
+
+  .form-field input:focus,
+  .form-field textarea:focus {
+    border-color: rgba(199,125,255,0.4);
+    box-shadow: 0 0 0 3px rgba(199,125,255,0.05);
+  }
+
+  .form-field textarea { min-height: 120px; }
+
+  .form-submit {
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    border: none;
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: none;
+    transition: opacity 0.3s, transform 0.3s;
+    align-self: flex-start;
+  }
+  .form-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* Footer */
+  footer {
+    padding: 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+  }
+
+  footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .footer-accent {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .footer-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  .footer-dot:nth-child(1) { background: var(--accent1); }
+  .footer-dot:nth-child(2) { background: var(--accent2); animation-delay: 0.3s; }
+  .footer-dot:nth-child(3) { background: var(--accent3); animation-delay: 0.6s; }
+
+  /* Scroll-reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { gap: 1.5rem; }
+    .section-inner { padding: 5rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .project-card { grid-template-columns: 1fr; }
+    .project-visual { min-height: 280px; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .hero-badge { display: none; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .skills-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Navigation -->
+<nav>
+  <a href="#hero" class="nav-logo"><span></span>Gaeun Choe</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Portfolio — SKKU Dance</div>
+    <h1 class="hero-name">Gaeun <em>Choe</em></h1>
+    <p class="hero-subtitle">Dance × Data × K-pop</p>
+    <p class="hero-desc">
+      Where movement meets mathematics — turning the pulse of K-pop into visual stories through dance and data.
+    </p>
+    <a href="#projects" class="hero-cta">View My Work</a>
+  </div>
+
+  <div class="hero-badge">
+    <div class="badge-ring"></div>
+    <div class="badge-inner">
+      <strong>SKKU</strong>
+      <span>댄스</span>
+      <strong style="color: var(--accent3); margin-top: 0.2rem;">Dance Major</strong>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- About -->
+<section id="about">
+  <div class="section-inner">
+    <div class="section-label">01 — About Me</div>
+    <h2 class="section-title">Dancer.<br>Data <em>Storyteller</em>.</h2>
+
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p>I am Gaeun Choe, a student at Sungkyunkwan University majoring in Dance. I am passionate about exploring the intersection of arts and big data, specifically focusing on K-pop trend analysis.</p>
+        <p>I love turning complex data into visual stories — finding the rhythm in numbers the same way I find it in movement. Every dataset is a choreography waiting to be interpreted.</p>
+        <p>My work bridges two worlds that may seem distant but are deeply connected: the expressive language of performance and the analytical precision of data science.</p>
+      </div>
+
+      <div class="about-stats">
+        <div class="stat-card">
+          <span class="stat-number">K-pop</span>
+          <span class="stat-label">Trend Analysis Focus</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">SKKU</span>
+          <span class="stat-label">Sungkyunkwan University</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">Arts</span>
+          <span class="stat-label">× Big Data Research</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Projects -->
+<section id="projects">
+  <div class="section-inner">
+    <div class="section-label">02 — Projects</div>
+    <h2 class="section-title">Selected <em>Work</em></h2>
+
+    <div class="project-card reveal">
+      <div class="project-visual">
+        <div class="chart-title-overlay">
+          <strong>Live Dashboard</strong>
+          <span>K-pop Chart Trends</span>
+        </div>
+        <div class="pulse-dots">
+          <div class="pulse-dot"></div>
+          <div class="pulse-dot"></div>
+          <div class="pulse-dot"></div>
+        </div>
+        <div class="chart-viz">
+          <div class="chart-bar-row">
+            <span class="bar-label">BTS</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:92%;background:linear-gradient(90deg,#ff4d6d,#c77dff);--d:0.1s"></div>
+            </div>
+            <span class="bar-val">92M</span>
+          </div>
+          <div class="chart-bar-row">
+            <span class="bar-label">BLACKPINK</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:87%;background:linear-gradient(90deg,#c77dff,#48cae4);--d:0.25s"></div>
+            </div>
+            <span class="bar-val">87M</span>
+          </div>
+          <div class="chart-bar-row">
+            <span class="bar-label">aespa</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:73%;background:linear-gradient(90deg,#48cae4,#f0c060);--d:0.4s"></div>
+            </div>
+            <span class="bar-val">73M</span>
+          </div>
+          <div class="chart-bar-row">
+            <span class="bar-label">NewJeans</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:68%;background:linear-gradient(90deg,#f0c060,#ff4d6d);--d:0.55s"></div>
+            </div>
+            <span class="bar-val">68M</span>
+          </div>
+          <div class="chart-bar-row">
+            <span class="bar-label">Stray Kids</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:61%;background:linear-gradient(90deg,#ff4d6d,#48cae4);--d:0.7s"></div>
+            </div>
+            <span class="bar-val">61M</span>
+          </div>
+          <div class="chart-bar-row">
+            <span class="bar-label">IVE</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:55%;background:linear-gradient(90deg,#c77dff,#ff4d6d);--d:0.85s"></div>
+            </div>
+            <span class="bar-val">55M</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-info">
+        <div class="project-num">01 / Project</div>
+        <h3 class="project-title">K-pop Chart Trend Dashboard</h3>
+        <p class="project-desc">
+          Discover the Pulse of K-pop — an interactive visualization platform that tracks streaming data, chart positions, and cultural momentum across major K-pop acts in real time. Transforming raw numbers into the heartbeat of a global phenomenon.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Data Visualization</span>
+          <span class="tag">K-pop Analytics</span>
+          <span class="tag">Trend Analysis</span>
+          <span class="tag">Dashboard</span>
+          <span class="tag">Big Data</span>
+        </div>
+        <a href="#" class="project-link">View Project</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Skills -->
+<section id="skills">
+  <div class="section-inner">
+    <div class="section-label">03 — Skills</div>
+    <h2 class="section-title">My <em>Toolkit</em></h2>
+
+    <div class="skills-grid reveal" id="skillsGrid">
+
+      <div class="skill-group">
+        <span class="skill-group-icon">🎭</span>
+        <div class="skill-group-name">Performance Arts</div>
+        <ul class="skill-list">
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Contemporary Dance</span><span class="skill-pct">95%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:95%"></div></div>
+          </li>
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">K-pop Choreography</span><span class="skill-pct">90%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+          </li>
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Stage Performance</span><span class="skill-pct">88%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="skill-group">
+        <span class="skill-group-icon">📊</span>
+        <div class="skill-group-name">Data Science</div>
+        <ul class="skill-list">
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Python / Pandas</span><span class="skill-pct">80%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+          </li>
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Data Visualization</span><span class="skill-pct">85%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+          </li>
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Trend Analysis</span><span class="skill-pct">82%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:82%"></div></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="skill-group">
+        <span class="skill-group-icon">🎵</span>
+        <div class="skill-group-name">K-pop Research</div>
+        <ul class="skill-list">
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Chart Analysis</span><span class="skill-pct">92%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div>
+          </li>
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Cultural Studies</span><span class="skill-pct">88%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+          </li>
+          <li class="skill-item">
+            <div class="skill-name-row"><span class="skill-name">Industry Insights</span><span class="skill-pct">86%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:86%"></div></div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-label">04 — Contact</div>
+    <h2 class="section-title">Let's <em>Connect</em></h2>
+
+    <div class="contact-layout reveal">
+      <div>
+        <p class="contact-intro">
+          Whether you want to collaborate on a data project, discuss K-pop trends, or explore the intersection of arts and analytics — I'd love to hear from you.
+        </p>
+        <div class="contact-links">
+          <a href="mailto:gaeun@skku.edu" class="contact-link">
+            <div class="contact-link-icon">✉</div>
+            <div class="contact-link-info">
+              <strong>Email</strong>
+              <span>gaeun@skku.edu</span>
+            </div>
+          </a>
+          <a href="#" class="contact-link">
+            <div class="contact-link-icon">🎓</div>
+            <div class="contact-link-info">
+              <strong>University</strong>
+              <span>Sungkyunkwan University</span>
+            </div>
+          </a>
+          <a href="#" class="contact-link">
+            <div class="contact-link-icon">💼</div>
+            <div class="contact-link-info">
+              <strong>LinkedIn</strong>
+              <span>Gaeun Choe</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="contact-form-area">
+        <div class="form-field">
+          <label>Your Name</label>
+          <input type="text" placeholder="홍길동 / Hong Gil-dong">
+        </div>
+        <div class="form-field">
+          <label>Email Address</label>
+          <input type="email" placeholder="hello@example.com">
+        </div>
+        <div class="form-field">
+          <label>Message</label>
+          <textarea placeholder="Tell me about your project or idea..."></textarea>
+        </div>
+        <button class="form-submit">Send Message →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>© 2026 Gaeun Choe — Dance & Data</p>
+  <div class="footer-accent">
+    <div class="footer-dot"></div>
+    <div class="footer-dot"></div>
+    <div class="footer-dot"></div>
+  </div>
+  <p>SKKU — Seoul, Korea 🇰🇷</p>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+      ring.style.width = '56px';
+      ring.style.height = '56px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px';
+      cursor.style.height = '12px';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Animate skill bars
+        if (e.target.id === 'skillsGrid' || e.target.querySelector) {
+          e.target.querySelectorAll('.skill-fill').forEach((bar, i) => {
+            setTimeout(() => bar.classList.add('animate'), i * 100);
+          });
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Also observe skills grid separately
+  const skillsGrid = document.getElementById('skillsGrid');
+  if (skillsGrid) {
+    const skillsObs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        document.querySelectorAll('.skill-fill').forEach((bar, i) => {
+          setTimeout(() => bar.classList.add('animate'), i * 150);
+        });
+      }
+    }, { threshold: 0.2 });
+    skillsObs.observe(skillsGrid);
+  }
+
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current
+        ? 'var(--text)' : '';
+    });
+  });
+
+  // Form submit feedback
+  document.querySelector('.form-submit').addEventListener('click', function() {
+    this.textContent = 'Sent! ✓';
+    this.style.background = 'linear-gradient(135deg, #48cae4, #06d6a0)';
+    setTimeout(() => {
+      this.textContent = 'Send Message →';
+      this.style.background = '';
+    }, 2500);
+  });
+</script>
+</body>
+</html>
