@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaeun Choe | Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    
+    <style>
+        /* ==========================================
+           MODERN CYBER DARK & NEON THEME (INLINE CSS)
+           ========================================== */
+        :root {
+            --bg-color: #06060c;
+            --card-bg: #0f0f1e;
+            --neon-cyan: #00FFCC;
+            --neon-pink: #FF007F;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --gradient-accent: linear-gradient(135deg, #FF007F 0%, #7000FF 50%, #00FFCC 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+
+        /* NAVIGATION BAR */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(6, 6, 12, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 75px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px var(--neon-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+
+        /* SECTION COMMON */
+        section {
+            padding: 120px 0 80px 0;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.4rem;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #fff;
+        }
+
+        .section-title span {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        /* ==========================================
+           ABOUT ME (HERO SECTION)
+           ========================================== */
+        #about {
+            min-height: 95vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .about-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .intro-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(0, 255, 204, 0.08);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .about-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .about-text h1 span {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .about-text .biography {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            margin-bottom: 40px;
+            text-align: justify;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-accent);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 255, 204, 0.5);
+        }
+
+        /* Profile Showcase Box */
+        .profile-showcase {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .glow-sphere {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            filter: blur(50px);
+            opacity: 0.25;
+            position: absolute;
+            animation: floatGlow 8s infinite alternate;
+        }
+
+        .identity-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px 30px;
+            border-radius: 24px;
+            z-index: 1;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            width: 100%;
+        }
+
+        .avatar-icon {
+            font-size: 3.8rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: danceMove 3s infinite ease-in-out;
+        }
+
+        .identity-card h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .identity-card .sub {
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .identity-card .university {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================
+           SKILLS SECTION
+           ========================================== */
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .skill-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.02);
+            padding: 35px;
+            border-radius: 20px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .skill-box:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-pink);
+            box-shadow: 0 10px 25px rgba(255, 0, 127, 0.1);
+        }
+
+        .skill-box .icon {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+
+        .skill-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .skill-box p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================
+           PROJECTS SECTION (K-POP DASHBOARD EMBED)
+           ========================================== */
+        .project-meta {
+            text-align: center;
+            max-width: 750px;
+            margin: 0 auto 50px auto;
+        }
+
+        .project-meta h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .project-meta p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            margin-bottom: 35px;
+        }
+
+        .panel-widget {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel-widget h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 12px;
+        }
+
+        /* Preset Tags */
+        .preset-flex {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .preset-tag {
+            background: transparent;
+            border: 1px solid var(--neon-pink);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .preset-tag:hover {
+            background-color: var(--neon-pink);
+            box-shadow: 0 0 12px var(--neon-pink);
+        }
+
+        /* Sliders Layout */
+        .slider-unit {
+            margin-bottom: 22px;
+        }
+
+        .slider-unit label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .slider-unit label span {
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--neon-pink);
+            background: #17172a;
+            height: 6px;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        /* Match Banner */
+        .match-banner {
+            background: linear-gradient(135deg, rgba(255, 0, 127, 0.08) 0%, rgba(0, 255, 204, 0.08) 100%);
+            border: 1px solid var(--neon-pink);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .match-banner h5 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-pink);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .winner-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .winner-artist {
+            color: var(--neon-cyan);
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        /* Ranking Data List */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #14142b;
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+        }
+
+        tr {
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .highlight-text {
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        /* ==========================================
+           CONTACT SECTION
+           ========================================== */
+        .contact-wrapper {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        .contact-wrapper p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .mailbox-url {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            text-decoration: none;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .mailbox-url:hover {
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 50px 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* ANIMATIONS */
+        @keyframes floatGlow {
+            0% { transform: scale(1); opacity: 0.2; }
+            100% { transform: scale(1.1); opacity: 0.35; }
+        }
+        @keyframes danceMove {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 900px) {
+            .about-wrapper, .dashboard-grid { grid-template-columns: 1fr; }
+            .profile-showcase { order: -1; margin-bottom: 30px; }
+            .about-text { text-align: center; }
+            .about-text .biography { max-width: 100%; }
+            .cta-group { justify-content: center; }
+            .about-text h1 { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">GAEUN<span>.CHOE</span></a>
+            <ul class="nav-links">
+                <li><a href="#about">About Me</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <section id="about">
+            <div class="about-wrapper">
+                <div class="about-text">
+                    <div class="intro-badge">Arts & Big Data Integration</div>
+                    <h1>Hi, I am <br><span>Gaeun Choe</span></h1>
+                    <p class="biography">I am Gaeun Choe, a student at Sungkyunkwan University majoring in Dance. I am passionate about exploring the intersection of arts and big data, specifically focusing on K-pop trend analysis. I love turning complex data into visual stories.</p>
+                    <div class="cta-group">
+                        <a href="#projects" class="btn-primary">Explore My Dashboard</a>
+                    </div>
+                </div>
+                <div class="profile-showcase">
+                    <div class="glow-sphere"></div>
+                    <div class="identity-card">
+                        <span class="avatar-icon">💃</span>
+                        <h2>Gaeun Choe</h2>
+                        <div class="sub">Dance & Data Practitioner</div>
+                        <div class="university">
+                            <strong>Sungkyunkwan University</strong><br>
+                            Department of Dance
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills">
+            <h2 class="section-title">My <span>Skills</span></h2>
+            <div class="skills-container">
+                <div class="skill-box">
+                    <div class="icon">📊</div>
+                    <h3>Data Visualization</h3>
+                    <p>전문적인 무용학적 감성과 다축 정량 데이터를 융합하여, 추상적인 안무의 형태를 Plotly.js 모델과 다각형 레이더 차트로 직관적으로 변환 및 시각화합니다.</p>
+                </div>
+                <div class="skill-box">
+                    <div class="icon">🩰</div>
+                    <h3>Movement Metrics</h3>
+                    <p>K-pop 퍼포먼스가 가진 고유의 무대 에너지를 분석합니다. Choreography fluidness(안무 유연성), 역동성, 동기화 속도 데이터를 기반으로 핵심 트렌드를 포착합니다.</p>
+                </div>
+                <div class="skill-box">
+                    <div class="icon">🌐</div>
+                    <h3>Front-End Scripting</h3>
+                    <p>가독성 높은 다크 테마 디자인과 직관적인 UI 요소를 설계하며, 복잡한 백엔드 없이도 브라우저에서 동적으로 작동하는 클라이언트 사이드 연산 환경을 빌드합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2 class="section-title">My <span>Projects</span></h2>
+            
+            <div class="project-meta">
+                <h3>🎵 K-pop Chart Trend Dashboard: Discover the Pulse of K-pop</h3>
+                <p>무용 전공자로서 가지는 직관과 분석 감성을 담아낸 데이터 대시보드 프로젝트입니다. 아래 슬라이더 값을 움직이거나 사전 프리셋을 선택하면, 알고리즘(Euclidean Distance)이 실시간으로 사용자의 성향 벡터와 2023-2024년 K-pop 히트곡 메타데이터를 매칭합니다.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="panel-widget">
+                    <h4>🎯 Preference Input Matrix</h4>
+                    
+                    <div class="preset-flex">
+                        <button class="preset-tag" onclick="applyPreset(95, 95, 85, 35)">🔥 Powerful Sharp Choreo</button>
+                        <button class="preset-tag" onclick="applyPreset(92, 78, 75, 88)">✨ Trendy Groovy Style</button>
+                        <button class="preset-tag" onclick="applyPreset(40, 45, 55, 50)">🌙 Expressive Contemporary</button>
+                    </div>
+
+                    <div class="slider-unit">
+                        <label>Danceability (Choreography Fluidity) <span id="dance-val">80</span></label>
+                        <input type="range" id="slider-dance" min="0" max="100" value="80" oninput="calculateMatch()">
+                    </div>
+                    <div class="slider-unit">
+                        <label>Energy Level (Stage Performance Power) <span id="energy-val">75</span></label>
+                        <input type="range" id="slider-energy" min="0" max="100" value="75" oninput="calculateMatch()">
+                    </div>
+                    <div class="slider-unit">
+                        <label>Tempo Beat Rate (Speed Preference) <span id="tempo-val">70</span></label>
+                        <input type="range" id="slider-tempo" min="0" max="100" value="70" oninput="calculateMatch()">
+                    </div>
+                    <div class="slider-unit">
+                        <label>Vibe / Mood (Dark vs Bright Vibe) <span id="mood-val">60</span></label>
+                        <input type="range" id="slider-mood" min="0" max="100" value="60" oninput="calculateMatch()">
+                    </div>
+                    <div class="slider-unit">
+                        <label>Global Popularity Weight <span id="pop-val">85</span></label>
+                        <input type="range" id="slider-pop" min="0" max="100" value="85" oninput="calculateMatch()">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="match-banner">
+                        <h5>🥇 CURRENT BEST MATCHER</h5>
+                        <div class="winner-title" id="best-title">-</div>
+                        <div class="winner-artist" id="best-artist">-</div>
+                        <div style="font-size:0.9rem;">Compatibility: <span id="best-score" style="color:var(--neon-cyan); font-weight:bold;">0%</span></div>
+                    </div>
+
+                    <div class="panel-widget" style="padding:15px;">
+                        <div id="radar-chart" style="width:100%; height:290px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-widget" style="margin-top:25px;">
+                <h4> echelon 📈 Quantified Recommendation Leaderboard</h4>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Song Title</th>
+                                <th>Artist</th>
+                                <th>Danceability</th>
+                                <th>Energy</th>
+                                <th>Match Compatibility</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="contact">
+            <h2 class="section-title">Get In <span>Touch</span></h2>
+            <div class="contact-wrapper">
+                <p>무용 예술과 데이터 공학, K-pop 트렌드 분석 및 시각화 연구 관련 협업이나 교류에 항상 열려 있습니다. 언제든 편하게 아래 이메일로 연락주세요!</p>
+                <a href="mailto:gaeun.choe@skku.edu" class="mailbox-url">gaeun.choe@skku.edu</a>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Gaeun Choe. Portfolio built for bridging Arts and Big Data Integration.</p>
+    </footer>
+
+    <script>
+        // Curated Hits Dataset (2023-2024 K-pop Attributes)
+        const kpopDataset = [
+            { title: "Super Shy", artist: "NewJeans", energy: 85, dance: 95, tempo: 75, mood: 90, pop: 92 },
+            { title: "Seven", artist: "Jungkook", energy: 78, dance: 88, tempo: 82, mood: 75, pop: 96 },
+            { title: "Perfect Night", artist: "LE SSERAFIM", energy: 65, dance: 80, tempo: 70, mood: 85, pop: 88 },
+            { title: "Drama", artist: "aespa", energy: 92, dance: 85, tempo: 68, mood: 35, pop: 91 },
+            { title: "Magnetic", artist: "ILLIT", energy: 75, dance: 90, tempo: 78, mood: 88, pop: 94 },
+            { title: "Love Wins All", artist: "IU", energy: 40, dance: 30, tempo: 50, mood: 60, pop: 89 },
+            { title: "Smart", artist: "LE SSERAFIM", energy: 80, dance: 92, tempo: 85, mood: 78, pop: 87 },
+            { title: "Dash", artist: "NMIXX", energy: 88, dance: 87, tempo: 80, mood: 55, pop: 82 },
+            { title: "Supernova", artist: "aespa", energy: 96, dance: 94, tempo: 88, mood: 40, pop: 97 },
+            { title: "Midas Touch", artist: "KISS OF LIFE", energy: 84, dance: 89, tempo: 76, mood: 65, pop: 85 }
+        ];
+
+        const attributes = ["Energy", "Danceability", "Tempo", "Mood", "Popularity"];
+
+        function applyPreset(dance, energy, tempo, mood) {
+            document.getElementById('slider-dance').value = dance;
+            document.getElementById('slider-energy').value = energy;
+            document.getElementById('slider-tempo').value = tempo;
+            document.getElementById('slider-mood').value = mood;
+            calculateMatch();
+        }
+
+        function calculateMatch() {
+            const uDance = parseInt(document.getElementById('slider-dance').value);
+            const uEnergy = parseInt(document.getElementById('slider-energy').value);
+            const uTempo = parseInt(document.getElementById('slider-tempo').value);
+            const uMood = parseInt(document.getElementById('slider-mood').value);
+            const uPop = parseInt(document.getElementById('slider-pop').value);
+
+            document.getElementById('dance-val').innerText = uDance;
+            document.getElementById('energy-val').innerText = uEnergy;
+            document.getElementById('tempo-val').innerText = uTempo;
+            document.getElementById('mood-val').innerText = uMood;
+            document.getElementById('pop-val').innerText = uPop;
+
+            const userVector = [uEnergy, uDance, uTempo, uMood, uPop];
+            const maxDistance = Math.sqrt(5 * Math.pow(100, 2));
+
+            let scoredSongs = kpopDataset.map(song => {
+                const songVector = [song.energy, song.dance, song.tempo, song.mood, song.pop];
+                let sumSquares = 0;
+                for(let i=0; i<userVector.length; i++) {
+                    sumSquares += Math.pow(userVector[i] - songVector[i], 2);
+                }
+                const dist = Math.sqrt(sumSquares);
+                const score = 100 - (dist / maxDistance) * 100;
+                return { ...song, score: score };
+            });
+
+            scoredSongs.sort((a, b) => b.score - a.score);
+
+            const topMatch = scoredSongs[0];
+            document.getElementById('best-title').innerText = topMatch.title;
+            document.getElementById('best-artist').innerText = "by " + topMatch.artist;
+            document.getElementById('best-score').innerText = topMatch.score.toFixed(1) + "%";
+
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = "";
+            scoredSongs.forEach((song, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${index + 1}</b></td>
+                        <td>${song.title}</td>
+                        <td>${song.artist}</td>
+                        <td>${song.dance}</td>
+                        <td>${song.energy}</td>
+                        <td class="highlight-text">${song.score.toFixed(1)}%</td>
+                    </tr>
+                `;
+            });
+
+            renderRadar(userVector, topMatch);
+        }
+
+        function renderRadar(userVec, topSong) {
+            const topSongVec = [topSong.energy, topSong.dance, topSong.tempo, topSong.mood, topSong.pop];
+            const radarLabels = [...attributes, attributes[0]];
+            const userPlotVec = [...userVec, userVec[0]];
+            const songPlotVec = [...topSongVec, topSongVec[0]];
+
+            const data = [
+                {
+                    type: 'scatterpolar',
+                    r: userPlotVec,
+                    theta: radarLabels,
+                    fill: 'toself',
+                    name: 'Your Preference',
+                    line: { color: '#FF007F' },
+                    fillcolor: 'rgba(255, 0, 127, 0.12)'
+                },
+                {
+                    type: 'scatterpolar',
+                    r: songPlotVec,
+                    theta: radarLabels,
+                    fill: 'toself',
+                    name: topSong.title,
+                    line: { color: '#00FFCC' },
+                    fillcolor: 'rgba(0, 255, 204, 0.18)'
+                }
+            ];
+
+            const layout = {
+                polar: {
+                    radialaxis: { visible: true, range: [0, 100], gridcolor: '#1d1d3b', tickfont: {color: '#94A3B8', size: 9} },
+                    angularaxis: { gridcolor: '#1d1d3b', tickfont: {color: '#FFFFFF', size: 11} },
+                    bgcolor: 'rgba(0,0,0,0)'
+                },
+                showlegend: true,
+                legend: { font: { color: '#FFFFFF', size: 10 }, orientation: 'h', x: 0, y: 1.25 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                margin: { t: 10, b: 10, l: 35, r: 35 }
+            };
+
+            Plotly.newPlot('radar-chart', data, layout, {displayModeBar: false});
+        }
+
+        window.onload = calculateMatch;
+    </script>
+</body>
+</html>
