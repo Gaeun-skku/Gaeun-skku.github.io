@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaeun Choe — Dance, Data & K-pop</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* K-pop Vibrant Light Palette */
+  :root {
+    --bg: #f7f9fc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: rgba(220, 180, 255, 0.3);
+    --text: #22192c;
+    --muted: #8a7a93;
+    --accent1: #ff5e7e; /* K-pop Pink */
+    --accent2: #a370ff; /* Pastel Purple */
+    --accent3: #3ec1b5; /* Mint Neon */
+    --glow1: rgba(255, 94, 126, 0.2);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Navigation */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0; z-index: 500;
+    padding: 1.4rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    background: rgba(247, 249, 252, 0.8);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text); text-decoration: none;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .nav-logo span { width: 8px; height: 8px; background: var(--accent1); border-radius: 50%; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace; font-size: 0.7rem; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  #hero {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; padding: 8rem 3rem 4rem;
+  }
+  #hero::before {
+    content: ''; position: absolute; inset: -50%;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 30%, rgba(255,94,126,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 70%, rgba(163,112,255,0.15) 0%, transparent 60%);
+    animation: bgDrift 10s ease-in-out infinite alternate;
+  }
+  @keyframes bgDrift { 0% { transform: translate(0,0); } 100% { transform: translate(2%, 2%); } }
+
+  .hero-inner { position: relative; z-index: 2; max-width: 900px; width: 100%; }
+  .hero-tag { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent1); margin-bottom: 1.5rem; letter-spacing: 0.2em;}
+  .hero-name { font-size: clamp(3.5rem, 9vw, 7rem); font-weight: 300; line-height: 1; margin-bottom: 0.5rem; }
+  .hero-name em { font-style: italic; background: linear-gradient(135deg, var(--accent1), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-subtitle { font-family: 'Syne', sans-serif; font-size: 1rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 2rem; }
+  .hero-desc { max-width: 540px; color: #4a3b54; margin-bottom: 3rem; }
+  .hero-cta {
+    display: inline-block; padding: 0.9rem 2rem; border: 1px solid var(--accent1);
+    color: var(--accent1); text-decoration: none; font-family: 'DM Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; transition: 0.3s;
+  }
+  .hero-cta:hover { background: var(--accent1); color: #ffffff; }
+
+  /* Sections */
+  .section-inner { max-width: 1100px; margin: 0 auto; padding: 8rem 3rem; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--accent1); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.15em;}
+  .section-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; margin-bottom: 3rem; }
+  .section-title em { font-style: italic; color: var(--accent2); }
+  .divider { height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); margin: 0 3rem; }
+
+  /* NEW: Color & Music Taste Matcher App Section */
+  #taste-finder { background: var(--surface); }
+  .app-container {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 3rem;
+    box-shadow: 0 15px 35px rgba(163,112,255,0.06); max-width: 800px; margin: 0 auto;
+  }
+  .app-step { display: none; }
+  .app-step.active { display: block; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .app-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; color: var(--text); }
+  .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.5rem; }
+  
+  .option-btn {
+    background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px;
+    cursor: pointer; transition: all 0.3s ease; text-align: center;
+  }
+  .option-btn:hover {
+    border-color: var(--accent2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(163,112,255,0.1);
+  }
+  .option-btn h4 { font-family: 'Syne', sans-serif; font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--text); }
+  .option-btn p { font-size: 0.85rem; color: var(--muted); }
+
+  /* App Result Page */
+  .result-card { text-align: center; padding: 2rem 1rem; }
+  .result-color-swatch {
+    width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: background 0.5s ease;
+  }
+  .result-tags { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; }
+  .result-tag { font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 0.3rem 0.8rem; background: rgba(0,0,0,0.05); border-radius: 20px; }
+  .reset-btn {
+    margin-top: 2rem; background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color: white; border: none; padding: 0.8rem 2rem; border-radius: 25px; font-family: 'DM Mono', monospace;
+    font-size: 0.75rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  /* About */
+  #about { background: var(--bg); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+  .about-text p { color: #4a3b54; margin-bottom: 1.5rem; }
+  .stat-card { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); margin-bottom: 1rem; }
+  .stat-number { font-size: 2rem; font-weight: 600; color: var(--accent1); display: block; }
+
+  /* Projects Dashboard Mini Viz */
+  #projects { background: var(--surface); }
+  .project-card { border: 1px solid var(--border); background: var(--bg); border-radius: 12px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; }
+  .project-visual { background: #f1f5f9; padding: 2rem; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; }
+  .chart-bar { height: 10px; background: rgba(0,0,0,0.05); border-radius: 5px; overflow: hidden; position: relative; margin-bottom: 0.5rem;}
+  .chart-fill { height: 100%; background: linear-gradient(90deg, var(--accent1), var(--accent2)); }
+  .project-info { padding: 3rem; }
+  .tag { font-family: 'DM Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.6rem; background: rgba(163,112,255,0.1); color: var(--accent2); margin-right: 0.4rem; }
+
+  /* Skills & Contact Base */
+  #skills { background: var(--bg); }
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .skill-group { background: var(--surface); padding: 2rem; border: 1px solid var(--border); }
+  
+  #contact { background: var(--surface); }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; max-width: 600px; margin: 0 auto; }
+  .contact-form input, .contact-form textarea { width: 100%; padding: 1rem; border: 1px solid var(--border); background: var(--bg); font-family: inherit;}
+  .contact-form button { background: var(--text); color: white; border: none; padding: 1rem; cursor: pointer; font-family: 'DM Mono', monospace; text-transform: uppercase;}
+
+  footer { padding: 2rem; text-align: center; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
+
+  @media (max-width: 768px) {
+    .about-grid, .project-card, .skills-grid { grid-template-columns: 1fr; }
+    .grid-options { grid-template-columns: 1fr; }
+    nav { padding: 1rem; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero" class="nav-logo"><span></span>Gaeun Choe</a>
+  <ul class="nav-links">
+    <li><a href="#taste-finder">Taste Finder</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Portfolio — SKKU Dance Major</div>
+    <h1 class="hero-name">Gaeun <em>Choe</em></h1>
+    <p class="hero-subtitle">Dance × Data × K-pop</p>
+    <p class="hero-desc">
+      Where movement meets mathematics — turning the rhythmic pulse of K-pop choreography into interactive visual data stories.
+    </p>
+    <a href="#taste-finder" class="hero-cta">Find Your K-Taste</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="taste-finder">
+  <div class="section-inner">
+    <div class="section-label">Interactive App Concept</div>
+    <h2 class="section-title">K-pop <em>Taste Finder</em></h2>
+    
+    <div class="app-container">
+      <div class="app-step active" id="step1">
+        <h3 class="app-title">Select Your Preferred Stage Vibe</h3>
+        <div class="grid-options">
+          <div class="option-btn" onclick="nextStep('neon_energetic')">
+            <h4>Neon & Energetic</h4>
+            <p>Fast beats, powerful choreo, high voltage synth melodies</p>
+          </div>
+          <div class="option-btn" onclick="nextStep('pastel_dreamy')">
+            <h4>Pastel & Dreamy</h4>
+            <p>Soft lyrical patterns, fluid motion, atmospheric aesthetics</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-step" id="step2">
+        <h3 class="app-title">What Kind of Rhythm Rules Your Day?</h3>
+        <div class="grid-options">
+          <div class="option-btn" onclick="calculateResult('cyber')">
+            <h4>Cyber Hip-hop Groove</h4>
+            <p>Heavy basslines, structural and precise hard-hitting breaks</p>
+          </div>
+          <div class="option-btn" onclick="calculateResult('retro')">
+            <h4>Retro City Pop Pulse</h4>
+            <p>Shimmering chords, addictive nostalgia, bouncy bass layers</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-step" id="stepResult">
+        <div class="result-card">
+          <h3 class="app-title">Your K-pop Identity Vector</h3>
+          <div class="result-color-swatch" id="resultColor"></div>
+          <h2 id="resultName" style="font-family: 'Syne', sans-serif; font-size: 1.8rem; margin-bottom: 0.5rem;">Result</h2>
+          <p id="resultDesc" style="max-width: 500px; margin: 0 auto; color: var(--muted); font-size: 0.95rem;"></p>
+          <div class="result-tags">
+            <span class="result-tag" id="tagMatch">Match</span>
+          </div>
+          <button class="reset-btn" onclick="resetApp()">Test Again</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="about">
+  <div class="section-inner">
+    <div class="section-label">01 — About Me</div>
+    <h2 class="section-title">Dancer & Data <em>Storyteller</em></h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I am Gaeun Choe, a student at Sungkyunkwan University majoring in Dance. I am passionate about exploring the intersection of performing arts and big data, specifically focusing on K-pop trend structures.</p>
+        <p>I love turning complex behavioral statistics into seamless visual stories — discovering the rhythm in datasets the same way I track it in physical space. Every dataset is a brand-new choreography waiting to be executed.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <span class="stat-number">K-pop Focus</span>
+          <span>Streaming Data & Subculture Analysis</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">SKKU Dance</span>
+          <span>Artistry Meets Analytical Systems</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="projects">
+  <div class="section-inner">
+    <div class="section-label">02 — Selected Works</div>
+    <h2 class="section-title">Analytics <em>Dashboard</em></h2>
+    <div class="project-card">
+      <div class="project-visual">
+        <span style="font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent2);">LIVE CONCEPT SYSTEM</span>
+        <div>
+          <span style="font-size: 0.8rem; font-family: 'DM Mono', monospace;">Global Chart Velocity</span>
+          <div class="chart-bar"><div class="chart-fill" style="width: 85%;"></div></div>
+        </div>
+        <div>
+          <span style="font-size: 0.8rem; font-family: 'DM Mono', monospace;">Choreography Engagement</span>
+          <div class="chart-bar"><div class="chart-fill" style="width: 70%;"></div></div>
+        </div>
+      </div>
+      <div class="project-info">
+        <h3 style="font-size: 1.8rem; font-weight: 400; margin-bottom: 1rem;">K-pop Chart Trend Dashboard</h3>
+        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Discover the Pulse of K-pop — an interactive tracking engine designed to display performance and platform statistics into fluid motion paths.
+        </p>
+        <span class="tag">Big Data</span><span class="tag">UI/UX Layout</span><span class="tag">Visualization</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="skills">
+  <div class="section-inner">
+    <div class="section-label">03 — Skills Matrix</div>
+    <h2 class="section-title">My <em>Toolkit</em></h2>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h3 style="font-family: 'Syne', sans-serif; font-size: 1.1rem; margin-bottom: 1rem;">Performance Arts</h3>
+        <p>Contemporary Dance, K-pop Choreography Analysis, Expression Mapping</p>
+      </div>
+      <div class="skill-group">
+        <h3 style="font-family: 'Syne', sans-serif; font-size: 1.1rem; margin-bottom: 1rem;">Data Analysis</h3>
+        <p>Python / Pandas, Visual Modeling, Trend Mapping Ecosystems</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-label">04 — Collaboration</div>
+    <h2 class="section-title">Let's <em>Connect</em></h2>
+    <div class="contact-form">
+      <input type="text" placeholder="Your Name">
+      <input type="email" placeholder="Your Email">
+      <textarea placeholder="Your Message" rows="5"></textarea>
+      <button type="button">Send Transmission</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Gaeun Choe. Designing the rhythm of data streams.</p>
+</footer>
+
+<script>
+  // Simple App State Logic
+  let userVibe = '';
+
+  function nextStep(vibe) {
+    userVibe = vibe;
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+  }
+
+  function calculateResult(rhythm) {
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('stepResult').classList.add('active');
+
+    const swatch = document.getElementById('resultColor');
+    const nameText = document.getElementById('resultName');
+    const descText = document.getElementById('resultDesc');
+    const tagMatch = document.getElementById('tagMatch');
+
+    // Dynamic Matching Combinations
+    if (userVibe === 'neon_energetic' && rhythm === 'cyber') {
+      swatch.style.background = '#ff0055';
+      nameText.innerText = 'Electric Cyber Pink';
+      descText.innerText = 'You love cutting-edge cyber-punk beats, hard accents, and maximum structural speed. Best matches: aespa, Stray Kids.';
+      tagMatch.innerText = 'High Energy / Techno-Groove';
+    } else if (userVibe === 'neon_energetic' && rhythm === 'retro') {
+      swatch.style.background = '#ffd166';
+      nameText.innerText = 'Vibrant Synth Gold';
+      descText.innerText = 'You match with punchy disco rhythms, high brightness, and rhythmic retro funk strings. Best matches: BTS (Dynamite Era), IVE.';
+      tagMatch.innerText = 'Bright Retro / Disco House';
+    } else if (userVibe === 'pastel_dreamy' && rhythm === 'cyber') {
+      swatch.style.background = '#a370ff';
+      nameText.innerText = 'Mystic Orchid Violet';
+      descText.innerText = 'You lean toward complex atmospheric trap sounds mixed with elegant rhapsodic patterns. Best matches: Red Velvet, SHINee.';
+      tagMatch.innerText = 'Dreamy Trap / R&B';
+    } else {
+      swatch.style.background = '#4ecdc4';
+      nameText.innerText = 'Holographic Cool Mint';
+      descText.innerText = 'You belong with soft nostalgic melodies, lo-fi drum grids, and warm easy-listening chords. Best matches: NewJeans, ILLIT.';
+      tagMatch.innerText = 'City Pop / Soft Chill';
+    }
+  }
+
+  function resetApp() {
+    userVibe = '';
+    document.getElementById('stepResult').classList.remove('active');
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step1').classList.add('active');
+  }
+</script>
+
+</body>
+</html>
