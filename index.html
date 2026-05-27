@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-pop Persona Matcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    
+    <style>
+        /* ==========================================
+           K-POP CYBERPUNK/NEON DARK THEME
+           ========================================== */
+        :root {
+            --bg-color: #0A0A12;
+            --card-bg: #121224;
+            --neon-cyan: #00FFCC;
+            --neon-pink: #FF007F;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Academic Header */
+        .academic-profile {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* Neon Headers */
+        .neon-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            margin-bottom: 5px;
+        }
+
+        .neon-subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            color: var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+            margin-bottom: 40px;
+        }
+
+        /* Layout Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        /* Card Panels */
+        .panel {
+            background-color: var(--card-bg);
+            border: 1px solid #22223b;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid #22223b;
+            padding-bottom: 10px;
+        }
+
+        /* Preset Buttons */
+        .preset-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            background: transparent;
+            border: 1px solid var(--neon-pink);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink);
+            transform: translateY(-2px);
+        }
+
+        /* Sliders */
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .slider-group label span {
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--neon-pink);
+            background: #1e1e38;
+            height: 6px;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        /* Match Winner Box */
+        .match-box {
+            background: linear-gradient(135deg, rgba(255, 0, 127, 0.15) 0%, rgba(0, 255, 204, 0.15) 100%);
+            border: 2px solid var(--neon-pink);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.2);
+        }
+
+        .match-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-pink);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .match-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .match-artist {
+            color: var(--neon-cyan);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .match-score {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Result Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1a1a35;
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+        }
+
+        tr {
+            border-bottom: 1px solid #1e1e38;
+        }
+
+        tr:hover {
+            background-color: #161632;
+        }
+
+        .score-highlight {
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        /* Footer Note */
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid #22223b;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <p class="academic-profile">Sungkyunkwan University | Arts and Big Data | Researcher: Gaeun Choe (Dance Major)</p>
+    <h1 class="neon-title">⚡ K-POP PERSONA MATCHER</h1>
+    <p class="neon-subtitle">Advanced Music & Dance Alignment Engine</p>
+
+    <div class="grid">
+        
+        <div class="panel">
+            <h2>🎯 1. Your Dance & Music Persona</h2>
+            
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">
+                Select a quick dance preset or fine-tune the vector sliders to calculate your exact K-pop match.
+            </p>
+
+            <div class="preset-container">
+                <button class="preset-btn" onclick="applyPreset(95, 95, 85, 35)">🔥 Powerful Choreo</button>
+                <button class="preset-btn" onclick="applyPreset(92, 78, 75, 88)">✨ Trendy & Groovy</button>
+                <button class="preset-btn" onclick="applyPreset(40, 45, 55, 50)">🌙 Contemporary Vibe</button>
+            </div>
+
+            <div class="slider-group">
+                <label>Danceability (Choreography Intensity) <span id="dance-val">80</span></label>
+                <input type="range" id="slider-dance" min="0" max="100" value="80" oninput="calculateMatch()">
+            </div>
+
+            <div class="slider-group">
+                <label>Energy Level (Stage Power) <span id="energy-val">75</span></label>
+                <input type="range" id="slider-energy" min="0" max="100" value="75" oninput="calculateMatch()">
+            </div>
+
+            <div class="slider-group">
+                <label>Tempo Beat Rate (Speed Preference) <span id="tempo-val">70</span></label>
+                <input type="range" id="slider-tempo" min="0" max="100" value="70" oninput="calculateMatch()">
+            </div>
+
+            <div class="slider-group">
+                <label>Vibe / Mood (Dark vs Bright) <span id="mood-val">60</span></label>
+                <input type="range" id="slider-mood" min="0" max="100" value="60" oninput="calculateMatch()">
+            </div>
+
+            <div class="slider-group">
+                <label>Global Popularity Weight <span id="pop-val">85</span></label>
+                <input type="range" id="slider-pop" min="0" max="100" value="85" oninput="calculateMatch()">
+            </div>
+        </div>
+
+        <div>
+            <div class="match-box" id="soulmate-card">
+                <h3>🏆 YOUR TRUE SONG SOULMATE</h3>
+                <div class="match-title" id="best-title">-</div>
+                <div class="match-artist" id="best-artist">-</div>
+                <div class="match-score">Compatibility: <span id="best-score" style="color:var(--neon-cyan)">0%</span></div>
+            </div>
+
+            <div class="panel" style="padding:15px;">
+                <h2 style="margin-left:15px; margin-top:15px; border:none;">📊 Vector Overlay Analysis</h2>
+                <div id="radar-chart" style="width:100%; height:320px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>📈 Full Ranked Recommendation Leaderboard</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Song Title</th>
+                        <th>Artist</th>
+                        <th>Danceability</th>
+                        <th>Energy</th>
+                        <th>Match Compatibility</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="footer-note">💡 <b>Dance Major Perspective:</b> Quantifying choreography fluidness and stage energy maps emotional, raw performance into mathematical, queryable vector data.</p>
+</div>
+
+<script>
+    // Curated Dataset (2023-2024 K-pop Hits)
+    const kpopDataset = [
+        { title: "Super Shy", artist: "NewJeans", energy: 85, dance: 95, tempo: 75, mood: 90, pop: 92 },
+        { title: "Seven", artist: "Jungkook", energy: 78, dance: 88, tempo: 82, mood: 75, pop: 96 },
+        { title: "Perfect Night", artist: "LE SSERAFIM", energy: 65, dance: 80, tempo: 70, mood: 85, pop: 88 },
+        { title: "Drama", artist: "aespa", energy: 92, dance: 85, tempo: 68, mood: 35, pop: 91 },
+        { title: "Magnetic", artist: "ILLIT", energy: 75, dance: 90, tempo: 78, mood: 88, pop: 94 },
+        { title: "Love Wins All", artist: "IU", energy: 40, dance: 30, tempo: 50, mood: 60, pop: 89 },
+        { title: "Smart", artist: "LE SSERAFIM", energy: 80, dance: 92, tempo: 85, mood: 78, pop: 87 },
+        { title: "Dash", artist: "NMIXX", energy: 88, dance: 87, tempo: 80, mood: 55, pop: 82 },
+        { title: "Supernova", artist: "aespa", energy: 96, dance: 94, tempo: 88, mood: 40, pop: 97 },
+        { title: "Midas Touch", artist: "KISS OF LIFE", energy: 84, dance: 89, tempo: 76, mood: 65, pop: 85 }
+    ];
+
+    const attributes = ["Energy", "Danceability", "Tempo", "Mood (Bright)", "Popularity"];
+
+    // Function to apply button presets
+    function applyPreset(dance, energy, tempo, mood) {
+        document.getElementById('slider-dance').value = dance;
+        document.getElementById('slider-energy').value = energy;
+        document.getElementById('slider-tempo').value = tempo;
+        document.getElementById('slider-mood').value = mood;
+        calculateMatch();
+    }
+
+    // Core Matching Engine: Euclidean Distance Matrix Calculation
+    function calculateMatch() {
+        // 1. Get current slider values
+        const uDance = parseInt(document.getElementById('slider-dance').value);
+        const uEnergy = parseInt(document.getElementById('slider-energy').value);
+        const uTempo = parseInt(document.getElementById('slider-tempo').value);
+        const uMood = parseInt(document.getElementById('slider-mood').value);
+        const uPop = parseInt(document.getElementById('slider-pop').value);
+
+        // Update indicator texts
+        document.getElementById('dance-val').innerText = uDance;
+        document.getElementById('energy-val').innerText = uEnergy;
+        document.getElementById('tempo-val').innerText = uTempo;
+        document.getElementById('mood-val').innerText = uMood;
+        document.getElementById('pop-val').innerText = uPop;
+
+        const userVector = [uEnergy, uDance, uTempo, uMood, uPop];
+        const maxDistance = Math.sqrt(5 * Math.pow(100, 2));
+
+        // 2. Map data with distance formula
+        let calculatedScores = kpopDataset.map(song => {
+            const songVector = [song.energy, song.dance, song.tempo, song.mood, song.pop];
+            
+            // Euclidean Distance calculation: sqrt( sum( (xi - yi)^2 ) )
+            let sumSquares = 0;
+            for(let i=0; i<userVector.length; i++) {
+                sumSquares += Math.pow(userVector[i] - songVector[i], 2);
+            }
+            const distance = Math.sqrt(sumSquares);
+            const matchScore = 100 - (distance / maxDistance) * 100;
+
+            return { ...song, score: matchScore };
+        });
+
+        // 3. Sort by score descending
+        calculatedScores.sort((a, b) => b.score - a.score);
+
+        // 4. Render Top Match Card
+        const topMatch = calculatedScores[0];
+        document.getElementById('best-title').innerText = topMatch.title;
+        document.getElementById('best-artist').innerText = "by " + topMatch.artist;
+        document.getElementById('best-score').innerText = topMatch.score.toFixed(1) + "%";
+
+        // 5. Render Leaderboard Table
+        const tbody = document.getElementById('leaderboard-body');
+        tbody.innerHTML = "";
+        calculatedScores.forEach((song, index) => {
+            const row = `
+                <tr>
+                    <td><b>${index + 1}</b></td>
+                    <td>${song.title}</td>
+                    <td>${song.artist}</td>
+                    <td>${song.dance}</td>
+                    <td>${song.energy}</td>
+                    <td class="score-highlight">${song.score.toFixed(1)}%</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+
+        // 6. Update Plotly Overlay Radar Chart
+        renderRadar(userVector, topMatch);
+    }
+
+    // Plotly Radar Rendering Engine
+    function renderRadar(userVec, topSong) {
+        const topSongVec = [topSong.energy, topSong.dance, topSong.tempo, topSong.mood, topSong.pop];
+
+        // Close the path for radar shapes by repeating the first item
+        const radarLabels = [...attributes, attributes[0]];
+        const userPlotVec = [...userVec, userVec[0]];
+        const songPlotVec = [...topSongVec, topSongVec[0]];
+
+        const data = [
+            {
+                type: 'scatterpolar',
+                r: userPlotVec,
+                theta: radarLabels,
+                fill: 'toself',
+                name: 'Your Preference',
+                line: { color: '#FF007F' },
+                fillcolor: 'rgba(255, 0, 127, 0.15)'
+            },
+            {
+                type: 'scatterpolar',
+                r: songPlotVec,
+                theta: radarLabels,
+                fill: 'toself',
+                name: topSong.title,
+                line: { color: '#00FFCC' },
+                fillcolor: 'rgba(0, 255, 204, 0.2)'
+            }
+        ];
+
+        const layout = {
+            polar: {
+                radialaxis: { visible: true, range: [0, 100], gridcolor: '#22223b', tickfont: {color: '#94A3B8'} },
+                angularaxis: { gridcolor: '#22223b', tickfont: {color: '#FFFFFF', size: 11} },
+                bgcolor: 'rgba(0,0,0,0)'
+            },
+            showlegend: true,
+            legend: { font: { color: '#FFFFFF' }, orientation: 'h', x: 0.1, y: 1.2 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            margin: { t: 20, b: 20, l: 40, r: 40 }
+        };
+
+        Plotly.newPlot('radar-chart', data, layout, {displayModeBar: false});
+    }
+
+    // Run calculation once on startup
+    window.onload = calculateMatch;
+</script>
+</body>
+</html>
